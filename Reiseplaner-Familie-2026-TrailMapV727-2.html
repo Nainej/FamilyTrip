@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Reiseplaner — Biel · Vandans · Wien · München 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light only;
+    --ink:#2B2118;
+    --pine:#A3451E;
+    --pine-light:#C05A2C;
+    --gold:#5C7A5E;
+    --gold-light:#84A388;
+    --paper:#F3EFE4;
+    --paper-dim:#EAE3D0;
+    --line:#D8CEB4;
+    --text:#2B2118;
+    --muted:#736A57;
+    --white:#fff;
+  }
+  *{box-sizing:border-box;}
+  html{ background:var(--paper) !important; }
+  body{
+    margin:0; background:var(--paper) !important; color:var(--text);
+    font-family:'Inter',sans-serif; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.02em; }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+
+  /* ---------- Header / route signature (topographic contour look) ---------- */
+  header.hero{
+    background:
+      radial-gradient(circle at 20% 30%, transparent 0 24px, var(--line) 25px 27px, transparent 28px),
+      radial-gradient(circle at 20% 30%, transparent 0 48px, var(--line) 49px 51px, transparent 52px),
+      radial-gradient(circle at 20% 30%, transparent 0 72px, var(--line) 73px 75px, transparent 76px),
+      radial-gradient(circle at 85% 70%, transparent 0 30px, var(--line) 31px 33px, transparent 34px),
+      radial-gradient(circle at 85% 70%, transparent 0 58px, var(--line) 59px 61px, transparent 62px),
+      var(--paper);
+    color:var(--ink); padding:30px 20px 26px;
+    position:relative; overflow:hidden; border-bottom:4px solid var(--pine);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--pine); margin:0 0 8px; font-weight:500;
+  }
+  header.hero h1{ font-size:32px; margin:0 0 8px; font-weight:700; color:var(--ink); line-height:1.05; }
+  header.hero p.sub{ margin:0; color:var(--muted); font-size:13px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.03em; }
+  .route-line{ margin-top:22px; }
+  .route-line svg{ width:100%; height:auto; display:block; }
+  .route-stop-label{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; fill:var(--ink);
+  }
+  .route-stop-date{ font-size:9.5px; fill:var(--pine); }
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:50;
+    display:flex; overflow-x:auto; gap:0; background:var(--paper);
+    padding:0 8px; -webkit-overflow-scrolling:touch;
+    border-bottom:1px solid var(--line);
+  }
+  nav.tabs button{
+    flex:0 0 auto; background:none; border:none; color:var(--muted);
+    font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:15px; letter-spacing:.05em;
+    padding:14px 14px; cursor:pointer; border-bottom:3px solid transparent;
+    text-transform:uppercase; white-space:nowrap;
+  }
+  nav.tabs button.active{ color:var(--pine); border-bottom-color:var(--pine); }
+  nav.tabs button:focus-visible{ outline:2px solid var(--pine); outline-offset:-2px; }
+
+  main{ max-width:760px; margin:0 auto; padding:22px 16px 80px; background:var(--paper) !important; }
+  section.tabpanel{ display:none; }
+  section.tabpanel.active{ display:block; animation:fade .25s ease; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  .card{
+    background:var(--white); border:1px solid var(--line); border-radius:0;
+    border-top:3px solid var(--gold);
+    padding:18px 18px 20px; margin-bottom:16px;
+  }
+  .ticket{ position:relative; }
+  .stub-divider{
+    border:none; border-top:1px solid var(--line); margin:16px 0;
+  }
+  h2.section-title{
+    font-size:26px; margin:4px 0 4px; color:var(--ink); font-weight:700;
+  }
+  .section-note{ color:var(--muted); font-size:13.5px; margin:0 0 18px; font-family:'Inter',sans-serif; }
+
+  .leg{ display:flex; gap:14px; margin-bottom:4px; }
+  .leg .day-chip{
+    flex:0 0 50px; text-align:center; font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px; color:var(--muted); padding-top:2px;
+  }
+  .leg .day-chip .num{ display:block; font-size:22px; font-weight:700; color:var(--pine); font-family:'Barlow Condensed',sans-serif;}
+  .leg-body{ flex:1; border-left:2px solid var(--line); padding-left:14px; padding-bottom:22px; }
+  .leg-body h3{ margin:0 0 4px; font-size:19px; font-weight:600; }
+  .leg-meta{ color:var(--muted); font-size:12.5px; margin:0 0 8px; font-family:'IBM Plex Mono',monospace;}
+  .chargers{ list-style:none; margin:0 0 8px; padding:0; }
+  .chargers li{ font-size:13.5px; padding:3px 0; }
+  .chargers li b{ color:var(--pine); }
+
+  .btn{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11.5px;
+    text-decoration:none; color:#fff; background:var(--pine); border:1px solid var(--pine);
+    padding:8px 14px; border-radius:0; margin:4px 6px 0 0; letter-spacing:.03em;
+    text-transform:uppercase;
+  }
+  .btn:hover{ background:var(--ink); border-color:var(--ink); }
+  .btn.gold{ border-color:var(--gold); background:var(--gold); color:#fff; }
+  .btn.gold:hover{ background:var(--ink); border-color:var(--ink); }
+
+  .daycard{ margin-bottom:22px; }
+  .daycard h3{ font-size:22px; margin:0 0 3px; font-weight:700; }
+  .daycard .date{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--pine); text-transform:uppercase; letter-spacing:.05em;}
+  ul.locs{ list-style:none; margin:10px 0 0; padding:0; }
+  ul.locs li{ font-size:13.5px; padding:4px 0; border-bottom:1px dotted var(--line); }
+  ul.locs li:last-child{ border-bottom:none; }
+  ul.locs li .n{ color:var(--muted); }
+
+  /* toggle */
+  .toggle{
+    display:inline-flex; border:1px solid var(--ink); border-radius:0;
+    overflow:hidden; margin:6px 0 14px;
+  }
+  .toggle button{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:6px 14px;
+    background:#fff; border:none; cursor:pointer; color:var(--ink); text-transform:uppercase;
+  }
+  .toggle button.active{ background:var(--ink); color:#fff; }
+
+  .option{ border-top:1px solid var(--line); padding-top:14px; margin-top:14px; }
+  .option:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
+  .option h4{ margin:0 0 4px; font-size:18px; font-weight:600; text-transform:none; }
+  .mode-block{ display:none; font-size:13.5px; }
+  .mode-block.active{ display:block; }
+  .mode-block .fact{ margin:2px 0; }
+  .mode-block .fact b{ color:var(--pine); }
+
+  .subtabs{ margin-bottom:16px; }
+  .subpanel{ display:none; }
+  .subpanel.active{ display:block; animation:fade .2s ease; }
+  .ug-cat{ font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--pine); margin:14px 0 4px; letter-spacing:.05em; font-weight:600;}
+  .ug-cat:first-child{ margin-top:0; }
+  .ug-item{ display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; padding:4px 0; border-bottom:1px dotted var(--line); gap:8px;}
+  .ug-item:last-child{ border-bottom:none; }
+  .ug-item a{ color:var(--pine); font-family:'IBM Plex Mono',monospace; font-size:11px; text-decoration:none; white-space:nowrap; flex:0 0 auto;}
+  .ug-item a:hover{ text-decoration:underline; }
+
+  /* packing checklist */
+  .pk-group h3{ font-size:18px; color:var(--ink); margin:18px 0 8px; font-weight:700; }
+  .pk-group:first-child h3{ margin-top:0; }
+  label.pk-item{
+    display:flex; align-items:flex-start; gap:9px; font-size:13.5px;
+    padding:5px 0; cursor:pointer; user-select:none;
+  }
+  label.pk-item input{ margin-top:3px; accent-color:var(--pine); width:15px; height:15px; flex:0 0 auto;}
+  label.pk-item span.txt{ transition:opacity .15s, text-decoration-color .15s; font-family:'Inter',sans-serif;}
+  label.pk-item input:checked + span.txt{ opacity:.45; text-decoration:line-through; }
+  .pk-progress{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);
+    position:sticky; top:46px; background:var(--paper); padding:8px 0; z-index:10;
+    border-bottom:1px solid var(--line); margin-bottom:6px;
+  }
+  .reset-link{ background:none; border:none; color:var(--pine); text-decoration:underline; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:11.5px; float:right;}
+
+  table.simple{ width:100%; border-collapse:collapse; font-size:13px; margin-top:10px;}
+  table.simple th, table.simple td{ text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); font-family:'Inter',sans-serif;}
+  table.simple th{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; color:var(--muted); font-weight:500;}
+
+  .callout{
+    background:var(--paper-dim); border-left:3px solid var(--gold);
+    padding:12px 14px; font-size:13.5px; margin:14px 0; border-radius:0; font-family:'Inter',sans-serif;
+  }
+  .callout.warn{ border-left-color:var(--pine); }
+  .app-item{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dotted var(--line);}
+  .app-item:last-child{ border-bottom:none; }
+  .app-item .name{ font-weight:700; font-size:14px; font-family:'Inter',sans-serif;}
+  .app-item .desc{ font-size:12.5px; color:var(--muted); font-family:'Inter',sans-serif;}
+
+  footer{ text-align:center; padding:24px 16px 40px; color:var(--muted); font-size:11px; font-family:'IBM Plex Mono',monospace;}
+  @media (min-width:600px){
+    header.hero{ padding:40px 40px 34px; }
+    header.hero h1{ font-size:40px; }
+    main{ padding:28px 24px 90px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="pwGate" style="position:fixed;inset:0;z-index:999;background:#F3EFE4;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:340px;width:100%;text-align:center;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:26px;color:#2B2118;margin-bottom:6px;">Familien-Roadtrip 2026</div>
+    <p style="font-family:'Inter',sans-serif;color:#736A57;font-size:13.5px;margin:0 0 18px;">Nur für die Familie — bitte Passwort eingeben</p>
+    <input id="pwInput" type="password" placeholder="Passwort" autocomplete="off"
+      style="width:100%;padding:12px 14px;font-size:16px;border:1px solid #D8CEB4;border-radius:0;margin-bottom:10px;font-family:'Inter',sans-serif;box-sizing:border-box;">
+    <button id="pwSubmit" style="width:100%;padding:12px;background:#A3451E;color:#fff;border:none;font-family:'IBM Plex Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:.03em;cursor:pointer;">Öffnen</button>
+    <p id="pwError" style="color:#A3451E;font-size:12.5px;margin-top:10px;display:none;font-family:'Inter',sans-serif;">Falsches Passwort, nochmal versuchen.</p>
+  </div>
+</div>
+<div id="siteContent" style="display:none;">
+
+<header class="hero">
+  <p class="eyebrow">Familien-Roadtrip · 27.07. – 03.08.2026</p>
+  <h1>Biel/Bienne → Vandans → Wien → München → Biel</h1>
+  <p class="sub">4 Personen · Tesla Model 3 Long Range · ovo-lacto-vegetarisch</p>
+  <div class="route-line" id="routeSvgHolder"></div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="uebersicht" class="active">Übersicht</button>
+  <button data-tab="todo">ToDo</button>
+  <button data-tab="route">Route &amp; Laden</button>
+  <button data-tab="vandans">Vandans</button>
+  <button data-tab="wien">Wien</button>
+  <button data-tab="muenchen">München</button>
+  <button data-tab="wetter">Wetter</button>
+  <button data-tab="budget">Budget</button>
+  <button data-tab="packliste">Packliste</button>
+  <button data-tab="apps">Apps &amp; Parken</button>
+</nav>
+
+<main>
+
+  <!-- ÜBERSICHT -->
+  <section class="tabpanel active" id="tab-uebersicht">
+    <h2 class="section-title">Reise auf einen Blick</h2>
+    <p class="section-note">Die wichtigsten Eckdaten — Details in den anderen Reitern.</p>
+
+    <div class="card">
+      <table class="simple">
+        <tr><th>27.07. Mo</th><td>Biel → Vandans (~350&nbsp;km) — Abfahrt ca. 10:00 Uhr, Einkauf Reiseproviant unterwegs</td></tr>
+        <tr><th>27.–30.07.</th><td>Vandans, Montafon (3 Nächte) — ohne Bergbahnen</td></tr>
+        <tr><th>30.07. Do</th><td>Vandans → Wien (~510&nbsp;km, direkt, ohne Salzburg-Stopp)</td></tr>
+        <tr><th>30.07.–02.08.</th><td>Wien, Geblergasse 70/17 (3 Nächte)</td></tr>
+        <tr><th>02.08. So</th><td>Wien → München (~435&nbsp;km)</td></tr>
+        <tr><th>02.–03.08.</th><td>München (1 Nacht), Novotel München City Arnulfpark — gebucht</td></tr>
+        <tr><th>03.08. Mo</th><td>München → Biel (~430&nbsp;km) — 1. Ferientag Bayern, Vorsicht Verkehr</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- TODO -->
+  <section class="tabpanel" id="tab-todo">
+    <h2 class="section-title">Noch offene Punkte</h2>
+    <div class="pk-progress"><span id="todoCount">0 / 0 erledigt</span><button class="reset-link" onclick="resetTodos()">Zurücksetzen</button></div>
+    <p class="section-note">Häkchen bleiben nur für diese Sitzung erhalten.</p>
+    <div class="card" id="todoHolder"></div>
+  </section>
+
+  <!-- ROUTE -->
+  <section class="tabpanel" id="tab-route">
+    <h2 class="section-title">Route &amp; Ladestopps</h2>
+    <p class="section-note">10-Tages-Vignette Österreich (12,80&nbsp;€, sofort gültig): <a class="mono" href="https://shop.asfinag.at/de/" target="_blank">shop.asfinag.at</a></p>
+    <div class="card" id="legsHolder"></div>
+  </section>
+
+  <!-- VANDANS -->
+  <section class="tabpanel" id="tab-vandans">
+    <h2 class="section-title">Vandans, Montafon</h2>
+    <div class="toggle subtabs" data-subgroup="vandans">
+      <button data-sub="unterkunft" class="active">Unterkunft</button>
+      <button data-sub="programm">Tagesprogramm</button>
+    </div>
+    <div class="subpanel active" data-subgroup="vandans" data-sub="unterkunft">
+      <div class="card">
+        <div class="card">
+          <h3 style="margin-top:0">Seilbahnstraße 6, 6773 Vandans</h3>
+          <table class="simple">
+            <tr><th>WLAN Name</th><td class="mono">pfritz</td></tr>
+            <tr><th>WLAN Code</th><td class="mono">Salzburg5020</td></tr>
+            <tr><th>Endreinigung</th><td>65,00 € in bar vor Ort zu bezahlen</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="subpanel" data-subgroup="vandans" data-sub="programm">
+      <p class="section-note">Keine Berg-/Kabinenbahnen. Freibad bis 20 Uhr (Juli).</p>
+      <div class="card" id="vandansHolder"></div>
+    </div>
+  </section>
+
+  <!-- WIEN -->
+  <section class="tabpanel" id="tab-wien">
+    <h2 class="section-title">Wien: 2 volle Tage + Abreise-Vormittag</h2>
+    <div class="toggle subtabs" data-subgroup="wien">
+      <button data-sub="unterkunft" class="active">Unterkunft</button>
+      <button data-sub="programm">Tagesprogramm</button>
+    </div>
+
+    <div class="subpanel active" data-subgroup="wien" data-sub="unterkunft">
+    <div class="card">
+      <h3 style="margin-top:0">Geblergasse 70, Top 12</h3>
+      <table class="simple">
+        <tr><th>Check-in</th><td>Do., 30.07. ab 15:00 Uhr</td></tr>
+        <tr><th>Check-out</th><td>So., 02.08. bis 11:00 Uhr</td></tr>
+        <tr><th>Zugang</th><td>Self-Check-in per Schlüsselbox — Code &amp; WLAN-Daten kommen 48 Std. vor Check-in automatisch</td></tr>
+        <tr><th>Gastgeber</th><td>Reinhard (Superhost, 4,7★, 572 Bewertungen) — nicht vor Ort, Verwaltung durch Co-Host "Easy Bnb"</td></tr>
+        <tr><th>Telefon Gastgeber</th><td class="mono">+43 676 7484862</td></tr>
+        <tr><th>Bestätigungscode</th><td class="mono">HMY4XR5N5Y</td></tr>
+        <tr><th>Hausregeln</th><td>Max. 5 Gäste, keine Haustiere</td></tr>
+        <tr><th>Stornierung</th><td>Nicht erstattungsfähig</td></tr>
+      </table>
+      <a class="btn gold" target="_blank" href="https://www.airbnb.de/rooms/37071894">Inserat auf Airbnb öffnen</a>
+      <div class="callout">
+        WLAN-Zugangsdaten und die genaue Schlüsselbox-Anleitung erscheinen automatisch 48 Std. vor Check-in in der Airbnb-App (Reiter "Gäste-Handbuch").
+      </div>
+    </div>
+    <hr class="stub-divider">
+    <div class="card">
+      <h3 style="margin-top:0">Parken</h3>
+      <p class="section-note" style="margin-bottom:0"><b>WIPARK Geblergasse 24–26</b> empfohlen (24&nbsp;€/Tag, 550&nbsp;m) — Parkhaus Parhamerplatz ist <u>kein</u> Kurzparker-Parkhaus (nur Dauerparker, Warteliste).</p>
+    </div>
+    <hr class="stub-divider">
+    <div class="card">
+      <h3 style="margin-top:0">Umgebung</h3>
+      <div id="umgebungHolder"></div>
+    </div>
+    </div>
+
+    <div class="subpanel" data-subgroup="wien" data-sub="programm">
+      <div id="wienHolder"></div>
+    </div>
+  </section>
+
+  <!-- MÜNCHEN -->
+  <section class="tabpanel" id="tab-muenchen">
+    <h2 class="section-title">München — 1 Nacht (02.–03.08.)</h2>
+    <div class="toggle subtabs" data-subgroup="muenchen">
+      <button data-sub="unterkunft" class="active">Unterkunft</button>
+      <button data-sub="programm">Ausflug</button>
+    </div>
+    <div class="subpanel active" data-subgroup="muenchen" data-sub="unterkunft">
+      <div class="card">
+        <h3 style="margin-top:0">Novotel München City Arnulfpark</h3>
+        <table class="simple">
+          <tr><th>Adresse</th><td>Arnulfstrasse 57, Neuhausen-Nymphenburg, 80636 München</td></tr>
+          <tr><th>Check-in</th><td>So., 02.08. ab 15:00 Uhr</td></tr>
+          <tr><th>Check-out</th><td>Mo., 03.08. bis 12:00 Uhr</td></tr>
+          <tr><th>Zimmer</th><td>Standard Zimmer mit 1 Doppelbett und Sofa (für Flavian Jenni, 2 Erw. + 2 Kinder)</td></tr>
+          <tr><th>Preis</th><td>ca. CHF 129 / € 139 für 4 Gäste (kein Frühstück inkludiert), zahlbar vor Ort</td></tr>
+          <tr><th>Telefon Hotel</th><td class="mono">+49 89 242078200</td></tr>
+          <tr><th>Buchungsnummer</th><td class="mono">5990.802.182 · PIN 6051</td></tr>
+          <tr><th>Parken</th><td>Hotel-eigene Parkplätze, 26 €/Tag, keine Reservierung nötig</td></tr>
+          <tr><th>WLAN</th><td>Kostenlos im ganzen Haus</td></tr>
+          <tr><th>Stornierung</th><td>Kostenlos bis 01.08.2026, 23:59 Uhr — danach 139 €. Reisedaten selbst können nicht mehr geändert werden.</td></tr>
+        </table>
+        <div class="callout">
+          Noch stornierbar bis <b>01.08.2026, 23:59 Uhr</b> — falls ihr euch für die Pumuckl-Lage (Au-Haidhausen) doch anders entscheiden wollt, siehe ToDo-Reiter.
+        </div>
+      </div>
+    </div>
+    <div class="subpanel" data-subgroup="muenchen" data-sub="programm">
+      <div class="card">
+        <h3 style="margin-top:0">Pumuckl-Sehenswürdigkeiten</h3>
+        <ul class="locs">
+          <li><b>Gedenktafel Meister Eder</b> <span class="n">— Widenmayerstraße 2, 80538 München</span></li>
+          <li><b>Pumuckl-Ampel</b> <span class="n">— seit 2025, Au-Haidhausen</span></li>
+          <li><b>Ehem. Wirtshaus (Drehort)</b> <span class="n">— Wiener Platz, Haidhausen</span></li>
+        </ul>
+        <a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Widenmayerstra%C3%9Fe+2+M%C3%BCnchen">Gedenktafel in Google Maps</a>
+        <a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Wiener+Platz+Haidhausen+M%C3%BCnchen">Wiener Platz in Google Maps</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WETTER -->
+  <section class="tabpanel" id="tab-wetter">
+    <h2 class="section-title">Wetter</h2>
+    <p class="section-note">Verlässliche Vorhersagen gibt's erst ab ca. 3–5 Tage vorher — darum hier Live-Links statt fixer Zahlen, die bis zur Abreise sowieso veraltet wären.</p>
+    <div class="card">
+      <table class="simple">
+        <tr><th>Vandans</th><td><a href="https://www.bergfex.com/sommer/vandans/wetter/" target="_blank">bergfex.com</a> · <a href="https://www.wetter.at/wetter/oesterreich/vorarlberg/vandans" target="_blank">wetter.at</a></td></tr>
+        <tr><th>Wien</th><td><a href="https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen" target="_blank">ZAMG</a> · <a href="https://www.wien.info/de" target="_blank">wien.info</a></td></tr>
+        <tr><th>München</th><td><a href="https://www.wetter.de/deutschland/wetter-muenchen-15786.html" target="_blank">wetter.de</a></td></tr>
+      </table>
+      <div class="callout">
+        <b>Grobe Erwartung Ende Juli/Anfang August:</b> Vandans (Bergklima) tagsüber 22–28 °C, morgens/abends deutlich kühler, Nachmittagsgewitter typisch. Wien &amp; München eher sommerlich-schwül, 25–32 °C, ebenfalls Gewitterneigung möglich. → siehe Packliste: Regenjacke &amp; ein wärmerer Pullover nicht vergessen.
+      </div>
+    </div>
+  </section>
+
+  <!-- BUDGET -->
+  <section class="tabpanel" id="tab-budget">
+    <h2 class="section-title">Budget</h2>
+    <p class="section-note">Alles ohne Gewähr — Stand der Recherche, bitte vor Ort/Buchung nochmal prüfen. Preise in €, ausser wo anders vermerkt.</p>
+    <div class="card">
+      <h3 style="margin-top:0">Fix / bereits bekannt</h3>
+      <table class="simple">
+        <tr><th>Unterkunft Wien</th><td>CHF 372 (3 Nächte, gebucht)</td></tr>
+        <tr><th>Vignette Österreich</th><td>12,80 € (10 Tage)</td></tr>
+        <tr><th>Parken Wien</th><td>ca. 72–96 € (WIPARK Geblergasse 24–26, 3–4 Tage)</td></tr>
+      </table>
+      <h3>Vandans — Programmpunkte</h3>
+      <table class="simple">
+        <tr><th>Vandanser Sagenweg</th><td>gratis</td></tr>
+        <tr><th>Rätikonbad Vandans</th><td>ca. 6 € Erw. / ca. 2–3 € Kind (Tageskarte, vor Ort prüfen)</td></tr>
+        <tr><th>Rodund-Stauseen Spazierweg</th><td>gratis (Eis im Liftstübli optional)</td></tr>
+        <tr><th>Alpenbad Montafon</th><td>ca. 7 € Erw. (Kinderpreis vor Ort erfragen)</td></tr>
+        <tr><th>Aquarena St. Gallenkirch</th><td>Preis vor Ort/telefonisch prüfen</td></tr>
+      </table>
+      <h3>Wien — Programmpunkte</h3>
+      <table class="simple">
+        <tr><th>Tiergarten Schönbrunn</th><td>92 € (2 Erw. à 29 € + 2 Kinder à 17 €)</td></tr>
+        <tr><th>Schlosspark Schönbrunn</th><td>gratis</td></tr>
+        <tr><th>Prunksaal Nationalbibliothek</th><td>13 € (Familienkarte)</td></tr>
+        <tr><th>Wiener Riesenrad</th><td>42 € (2 Erw. à 14,50 € + 2 Kinder à 6,50 €)</td></tr>
+        <tr><th>Prater allgemein</th><td>Eintritt gratis, einzelne Fahrgeschäfte extra</td></tr>
+        <tr><th>MuseumsQuartier Höfe</th><td>gratis (ZOOM Kindermuseum optional, extra)</td></tr>
+        <tr><th>Naschmarkt</th><td>kein Eintritt — Budget nach Verzehr</td></tr>
+        <tr><th>Donauinsel Familienbadestrand</th><td>gratis</td></tr>
+        <tr><th>Kahlenberg</th><td>gratis (ausser Einkehr)</td></tr>
+      </table>
+      <h3>München</h3>
+      <table class="simple">
+        <tr><th>Pumuckl-Sehenswürdigkeiten</th><td>gratis (alles im Freien begehbar)</td></tr>
+        <tr><th>Unterkunft München</th><td>CHF 129 (1 Nacht, gebucht — Novotel Arnulfpark, exkl. Frühstück)</td></tr>
+      </table>
+      <h3>Fahrt &amp; Verpflegung</h3>
+      <table class="simple">
+        <tr><th>Laden Tesla (gesamte Strecke)</th><td>ca. 150–200 € (~345 kWh à 0,40–0,50 €)</td></tr>
+        <tr><th>Wiener Öffi-Tickets (falls genutzt)</th><td>ca. 2,60–3,20 €/Fahrt und Person</td></tr>
+        <tr><th>Verpflegung unterwegs (4 Fahrtage)</th><td>siehe Packliste — Einkaufsliste dort</td></tr>
+      </table>
+      <div class="callout">
+        Preise für Rätikonbad, Alpenbad Montafon und Aquarena sind älteren Quellen entnommen — bitte kurz vor Ort telefonisch/online verifizieren (Nummern im Vandans-Reiter, sobald ergänzt).
+      </div>
+    </div>
+  </section>
+
+  <!-- PACKLISTE -->
+  <section class="tabpanel" id="tab-packliste">
+    <h2 class="section-title">Packliste</h2>
+    <div class="pk-progress"><span id="pkCount">0 / 0 erledigt</span><button class="reset-link" onclick="resetPacking()">Zurücksetzen</button></div>
+    <p class="section-note">Häkchen bleiben nur für diese Browser-Sitzung erhalten (kein Cloud-Speicher) — vor dem Schliessen ggf. Foto machen.</p>
+    <div class="card" id="packingHolder"></div>
+  </section>
+
+  <!-- APPS -->
+  <section class="tabpanel" id="tab-apps">
+    <h2 class="section-title">Apps &amp; Parken</h2>
+    <div class="card">
+      <div class="app-item">
+        <div><div class="name">wegfinder</div><div class="desc">Routenplaner + Ticketkauf, ganz Österreich inkl. Wien</div></div>
+        <a class="btn gold" href="https://apps.apple.com/at/app/wegfinder/id680580267" target="_blank">Laden</a>
+      </div>
+      <div class="app-item">
+        <div><div class="name">HANDYPARKEN</div><div class="desc">Kurzparkzone bezahlen (Backup, ihr parkt meist in Garagen)</div></div>
+        <a class="btn gold" href="https://apps.apple.com/at/app/handy-parken/id377723280" target="_blank">Laden</a>
+      </div>
+      <div class="app-item">
+        <div><div class="name">Kurzparkzonen &amp; Parken Wien</div><div class="desc">Zeigt live, ob gerade Parkschein nötig ist (3,99&nbsp;€)</div></div>
+        <a class="btn gold" href="https://apps.apple.com/at/app/kurzparkzonen-parken-wien/id548389439" target="_blank">Laden</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Erstellt von Claude für die Familienreise 2026 · Preise &amp; Öffnungszeiten ohne Gewähr, bitte kurz vor Ort prüfen</footer>
+
+<script>
+/* ---------------- DATA ---------------- */
+const legs = [
+  { date:'27.07. Mo', title:'Biel/Bienne → Vandans', meta:'~350 km · 3½–4 Std. · voll geladen losfahren',
+    chargers:[
+      {label:'Optional: Supercharger Rankweil', note:'Guter Kombi-Stopp: laden + Reiseproviant einkaufen (Schnellrestaurant und Geschäfte direkt daneben)'}
+    ],
+    pins:[[47.1367785,7.2467909,'Biel/Bienne'],[47.2728732,9.6175546,'Supercharger Rankweil'],[47.0898258,9.8681348,'Unterkunft Vandans (Seilbahnstraße 6)']]
+  },
+  { date:'30.07. Do', title:'Vandans → Wien', meta:'~510 km · ~5 Std. reine Fahrzeit · direkt, ohne Salzburg-Stopp',
+    chargers:[{label:'Supercharger Asten (Linz)', note:'Hauptladestopp, ~300 km, 32 Stalls'}],
+    pins:[[47.0898258,9.8681348,'Unterkunft Vandans (Seilbahnstraße 6)'],[48.2213102,14.4067046,'Supercharger Asten/Linz'],[48.2080696,16.3713095,'Wien']]
+  },
+  { date:'02.08. So', title:'Wien → München', meta:'~435 km · 4¼ Std. · früh starten wegen Rückreiseverkehr',
+    chargers:[
+      {label:'Supercharger Wienerberg', note:'vor Abfahrt auffüllen (Unterkunft ohne Lader)'},
+      {label:'Supercharger Rosenheim', note:'Hauptladestopp bei ~380 km'}
+    ],
+    pins:[[48.2080696,16.3713095,'Wien'],[48.16733,16.347869,'Supercharger Wienerberg'],[47.8170172,12.1206417,'Supercharger Rosenheim'],[48.1351253,11.5819806,'München']]
+  },
+  { date:'03.08. Mo', title:'München → Biel/Bienne', meta:'~430 km · 4¼–4½ Std. · 1. Ferientag Bayern → Vormittag/frühe Nachmittag meiden',
+    chargers:[{label:'Supercharger Lindau', note:'Top-Stopp mit Lounge & Kinder-Spielbereich, ~180 km'}],
+    pins:[[48.1351253,11.5819806,'München'],[47.5482109,9.7257231,'Supercharger Lindau'],[47.1367785,7.2467909,'Biel/Bienne']]
+  }
+];
+
+const vandansDays = [
+  { date:'Mo 27.07.', title:'Anreise', locs:[
+      ['Vandans Zentrum / Sagenweg-Start','Ankunft, Dorfspaziergang',47.0953812,9.8651649],
+      ['Rätikonbad Vandans','Freibad, im Juli bis 20 Uhr offen',47.095167,9.8693262] ]},
+  { date:'Di 28.07.', title:'Vandanser Sagenweg', locs:[
+      ['Start Sagenweg','14 Stationen, 6,2 km/200 Hm oder volle Runde 10 km/380 Hm',47.0953812,9.8651649],
+      ['Rätikonbad Vandans','Abkühlung am Nachmittag',47.095167,9.8693262] ]},
+  { date:'Mi 29.07.', title:'Tschagguns / Alpenbad', locs:[
+      ['Rodund-Stauseen','Flacher Spazierweg, Eis im Liftstübli',47.0777648,9.8779641],
+      ['Alpenbad Montafon','Grosses Freibad — nur bei Schönwetter',47.0711471,9.9141888],
+      ['Aquarena St. Gallenkirch','Hallenbad, Schlechtwetter-Alternative',47.0205574,9.9657773] ]},
+  { date:'Do 30.07.', title:'Ausklang & Abreise', locs:[
+      ['Schruns Zentrum','Bummel, Eis, danach Abfahrt Richtung Wien',47.079924,9.917518] ]}
+];
+
+// Wien days: each option has transit + car info
+const wienDays = [
+  { id:'A', date:'Fr 31.07.', title:'Tag A — 3 Optionen', options:[
+    { key:'A1', label:'Schönbrunn & Zoo',
+      transit:{time:'~25–30 Min.', steps:'Fussweg zur U6 Alser Straße (5 Min.) → Längenfeldgasse → U4 → Schönbrunn'},
+      car:{time:'~15–20 Min.', parking:'Garage Schlossallee, Linzer Str. 3a — ca. 35 €/Tag (Alt.: Parkgarage Hietzing, näher am Zoo, ca. 40 €/Tag)'},
+      pins:[[48.1858124,16.3127641,'Schloss Schönbrunn'],[48.1820863,16.3027845,'Tiergarten Schönbrunn'],[48.19131,16.3169932,'Garage Schlossallee']]},
+    { key:'A2', label:'Altstadt & Prunksaal (ältester Bibliothekstipp)',
+      transit:{time:'~20–25 Min.', steps:'Tram 43 ab Elterleinplatz → Schottentor, dann kurzer Fussweg'},
+      car:{time:'~15 Min. (Innenstadtverkehr)', parking:'Garage Freyung (Herrengasse) — ca. 28 €/Tag. Tipp: hier eher ÖV/zu Fuss statt Auto.'},
+      pins:[[48.2084114,16.3734707,'Stephansdom'],[48.2063563,16.3662429,'Prunksaal Nationalbibliothek — Familienkarte 13 €'],[48.2056578,16.3647803,'Hofburg'],[48.2080439,16.3613967,'Volksgarten'],[48.2117602,16.3647222,'Garage Freyung']]},
+    { key:'A3', label:'Donauinsel (Baden & Natur)',
+      transit:{time:'~30–35 Min.', steps:'U6 → U4/U1 Richtung Donauinsel prüfen'},
+      car:{time:'~20–25 Min.', parking:'Kostenlose Parkplätze direkt am Familienbadestrand'},
+      pins:[[48.2427614,16.3968144,'Familienbadestrand Neue Donau']]}
+  ]},
+  { id:'B', date:'Sa 01.08.', title:'Tag B — 3 Optionen', options:[
+    { key:'B1', label:'Prater & Riesenrad',
+      transit:{time:'~30–35 Min.', steps:'Tram 43 → Schottentor → U2 Richtung Praterstern (nicht 20 Min. wie oft geschätzt!)'},
+      car:{time:'~20 Min.', parking:'Prater Parking Garage, Tiefstraße/Präuscherplatz — ca. 20 €/Tag'},
+      pins:[[48.2166995,16.3959008,'Wiener Riesenrad'],[48.2176687,16.3982421,'Prater Parking Garage']]},
+    { key:'B2', label:'MuseumsQuartier & Naschmarkt',
+      transit:{time:'~20–25 Min.', steps:'Tram 43 → Schottentor, dann kurzer Weg'},
+      car:{time:'~15 Min.', parking:'Tiefgarage MuseumsQuartier, dann 10 Min. zu Fuss zum Naschmarkt'},
+      pins:[[48.2033369,16.3586166,'MuseumsQuartier'],[48.1986178,16.3636494,'Naschmarkt'],[48.2038223,16.359029,'Tiefgarage MuseumsQuartier']]},
+    { key:'B3', label:'Kahlenberg',
+      transit:{time:'~40–45 Min.', steps:'Tram 9/U6 → Nussdorfer Straße → Bus 38A bis Endstation'},
+      car:{time:'~25–30 Min.', parking:'Kostenloser Parkplatz direkt am Aussichtspunkt — hier klar im Vorteil'},
+      pins:[[48.2762482,16.3370343,'Kahlenberg Aussicht']]}
+  ]},
+  { id:'C', date:'So 02.08. — Vormittag, Abreisetag', title:'Tag C — 2 Optionen', options:[
+    { key:'C1', label:'Volksgarten (entspannter Ausklang)',
+      transit:{time:'~20–25 Min.', steps:'Tram 43 → Schottentor'},
+      car:{time:'~15 Min.', parking:'Garage Freyung (Herrengasse)'},
+      pins:[[48.2080439,16.3613967,'Volksgarten'],[48.2117602,16.3647222,'Garage Freyung']]},
+    { key:'C2', label:'Naschmarkt-Frühstück',
+      transit:{time:'~20–25 Min.', steps:'Tram 43 → Schottentor + kurzer Weg'},
+      car:{time:'~15 Min.', parking:'Repark Garage Mollardgasse, direkt am Markt'},
+      pins:[[48.1986178,16.3636494,'Naschmarkt'],[48.1920574,16.3518526,'Repark Garage Mollardgasse']]}
+  ]}
+];
+
+const packing = {
+  shared:['Pässe/IDs (alle 4)','Führerschein & Fahrzeugpapiere','Grüne Versicherungskarte','Europ. Krankenversicherungskarte (alle 4)','Vignette Österreich (10-Tage, digital)','Mobile Connector + Schuko-Adapter','Erste-Hilfe-Set','Sonnencreme, Familiengrösse','4× Trinkflaschen','Kühlbox','4× Badetücher'],
+  people:{
+    'Erwachsene/r 1':['Wanderschuhe','2× Badesachen','Regenjacke','6× Unterwäsche & Socken','5× Oberteile','2× lange + 2× kurze Hosen','Stadt-Outfit','Sonnenbrille','Ladekabel Handy'],
+    'Erwachsene/r 2':['Wanderschuhe','2× Badesachen','Regenjacke','6× Unterwäsche & Socken','5× Oberteile','2× lange + 2× kurze Hosen','Stadt-Outfit','Sonnenbrille','Ladekabel Handy'],
+    'Kind 1 (13 J.)':['Wanderschuhe','2× Badesachen','Regenjacke','7× Unterwäsche & Socken','Kopfhörer fürs Auto','Buch/Tablet','Taschengeld','Badespielzeug'],
+    'Kind 2 (9 J.)':['Wanderschuhe','2× Badesachen','Regenjacke','7× Unterwäsche & Socken','Kopfhörer fürs Auto','Kuscheltier','Reise-Malbuch','Badespielzeug']
+  },
+  lastMinute:['Zahnbürsten & Zahnpasta','Medikamente','Handy-Ladekabel aus der Steckdose','Frische Lebensmittel fürs Lunchpaket','Wasserflaschen frisch befüllen','Portemonnaie & Schlüssel']
+};
+
+const todos = {
+  'Vor der Abreise':[
+    'Ggf. bis 01.08. Novotel-Buchung nochmal pruefen/stornieren, falls andere Lage gewuenscht',
+    'Riesenrad/Prunksaal-Tickets ggf. vorab online kaufen (Warteschlangen)'
+  ],
+  'Kurz vor Abfahrt Wien (02.08.)':[
+    'Abfahrtszeit an Claude melden oder aktuelle Verkehrsempfehlung einholen',
+    'Vor Abfahrt an Supercharger Wienerberg auffüllen'
+  ],
+  'Kurz vor Abfahrt München (03.08.)':[
+    'Abfahrtszeit an Claude melden oder aktuelle Verkehrsempfehlung einholen (1. Ferientag Bayern!)'
+  ],
+  '48 Std. vor Wien-Check-in':[
+    'WLAN-Daten & Schlüsselbox-Code aus Airbnb-App nachtragen lassen'
+  ]
+};
+
+const umgebungWien = [
+  { cat:'🛒 Supermarkt', items:[
+    ['BILLA','Geblergasse 73–75, 3 Min. zu Fuss',48.2161639,16.3285822],
+    ['INTERSPAR','Jörgerstraße 24, grössere Auswahl',48.2178858,16.3381262] ]},
+  { cat:'🍝 Restaurant (italienisch)', items:[
+    ['Cucina Ballerini','Sizilianisch, sehr gute Bewertungen',48.2170943,16.3377119],
+    ['Triangolo','4.9★ Pizza, viele vegetarische Optionen',48.214456,16.3326893] ]},
+  { cat:'🥐 Bäckerei', items:[
+    ['Hübler Kaffee-Konditorei','Traditionscafé seit 1955',48.2153972,16.3263332],
+    ['Geier. Die Bäckerei','Sehr gute Croissants, So geöffnet',48.2212058,16.3217413] ]},
+  { cat:'💊 Apotheke / Drogerie', items:[
+    ['Bartholomäus-Apotheke','Am Elterleinplatz',48.2183903,16.3315792],
+    ['dm Drogerie','Am Elterleinplatz',48.21804,16.330943] ]},
+  { cat:'🚋 ÖV', items:[
+    ['Elterleinplatz — Tram 9 & 43','4 Min. zu Fuss, direkt ins Zentrum',48.2181711,16.3319852] ]},
+  { cat:'⛲ Sehenswürdigkeit', items:[
+    ['Alszauberbrunnen','Historischer Brunnen mit Musiker-Figuren',48.2183664,16.3313017] ]}
+];
+
+
+/* ---------------- RENDER: route line SVG ---------------- */
+function renderRouteSvg(){
+  const stops = [['Biel','27.07.'],['Vandans','27.–30.07.'],['Wien','30.07.–02.08.'],['München','02.–03.08.'],['Biel','03.08.']];
+  const w=680,h=70, n=stops.length, gap=w/(n-1);
+  let dots='', labels='';
+  stops.forEach((s,i)=>{
+    const x=8+i*gap*0.94;
+    dots+=`<circle cx="${x}" cy="30" r="5" fill="${i===0||i===n-1?'#A3451E':'#F3EFE4'}" stroke="#A3451E" stroke-width="2"/>`;
+    labels+=`<text x="${x}" y="52" text-anchor="middle" class="route-stop-label">${s[0]}</text>`;
+    labels+=`<text x="${x}" y="64" text-anchor="middle" class="route-stop-date">${s[1]}</text>`;
+  });
+  const svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+    <line x1="8" y1="30" x2="${w-8}" y2="30" stroke="#C9A227" stroke-width="1.5" stroke-dasharray="1,7" stroke-linecap="round"/>
+    ${dots}${labels}
+  </svg>`;
+  document.getElementById('routeSvgHolder').innerHTML = svg;
+}
+
+function mapsDirUrl(pins){
+  if(pins.length===1) return `https://www.google.com/maps/search/?api=1&query=${pins[0][0]},${pins[0][1]}`;
+  const origin=`${pins[0][0]},${pins[0][1]}`;
+  const dest=`${pins[pins.length-1][0]},${pins[pins.length-1][1]}`;
+  const wps=pins.slice(1,-1).map(p=>`${p[0]},${p[1]}`).join('|');
+  let url=`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`;
+  if(wps) url+=`&waypoints=${encodeURIComponent(wps)}`;
+  return url;
+}
+/* ---------------- RENDER: legs ---------------- */
+function renderLegs(){
+  const holder=document.getElementById('legsHolder');
+  holder.innerHTML = legs.map((leg,i)=>`
+    <div class="leg">
+      <div class="day-chip"><span class="num">${i+1}</span>${leg.date.split(' ')[0]}</div>
+      <div class="leg-body">
+        <h3>${leg.title}</h3>
+        <p class="leg-meta">${leg.meta}</p>
+        <ul class="chargers">${leg.chargers.map(c=>`<li>🔋 <b>${c.label}</b> — ${c.note}</li>`).join('')}</ul>
+        <a class="btn gold" target="_blank" href="${mapsDirUrl(leg.pins)}">Route in Google Maps öffnen</a>
+        ${i===legs.length-1?'':''}
+      </div>
+    </div>`).join('') + `<hr class="stub-divider"><p class="section-note" style="margin:0">Reiseproviant: am besten beim Rankweil-Stopp einkaufen (Supermarkt/Geschäfte direkt bei der Ausfahrt) — siehe Packliste für die Einkaufsliste.</p>`;
+}
+
+/* ---------------- RENDER: vandans ---------------- */
+function renderVandans(){
+  const holder=document.getElementById('vandansHolder');
+  holder.innerHTML = vandansDays.map((d,i)=>{
+    const pins = d.locs.map(l=>[l[2],l[3],l[0]]);
+    return `<div class="daycard">
+      <div class="date">${d.date}</div>
+      <h3>${d.title}</h3>
+      <ul class="locs">${d.locs.map(l=>`<li><b>${l[0]}</b> <span class="n">— ${l[1]}</span></li>`).join('')}</ul>
+      <a class="btn" target="_blank" href="${mapsDirUrl(pins)}">In Google Maps öffnen</a>
+    </div>${i<vandansDays.length-1?'<hr class="stub-divider">':''}`;
+  }).join('');
+}
+
+/* ---------------- RENDER: wien ---------------- */
+function renderWien(){
+  const holder=document.getElementById('wienHolder');
+  holder.innerHTML = wienDays.map(day=>`
+    <div class="card daycard">
+      <div class="date">${day.date}</div>
+      <h3>${day.title}</h3>
+      ${day.options.map(o=>{
+        const allPins = o.pins;
+        return `<div class="option">
+          <h4>${o.key} — ${o.label}</h4>
+          <div class="toggle" data-group="${day.id}-${o.key}">
+            <button data-mode="transit" class="active">🚃 ÖV</button>
+            <button data-mode="car">🚗 Auto</button>
+          </div>
+          <div class="mode-block active" data-mode="transit" data-group="${day.id}-${o.key}">
+            <p class="fact"><b>Fahrzeit:</b> ${o.transit.time}</p>
+            <p class="fact">${o.transit.steps}</p>
+          </div>
+          <div class="mode-block" data-mode="car" data-group="${day.id}-${o.key}">
+            <p class="fact"><b>Fahrzeit:</b> ${o.car.time}</p>
+            <p class="fact"><b>🅿️ Parken:</b> ${o.car.parking}</p>
+          </div>
+          <a class="btn" target="_blank" href="${mapsDirUrl(allPins)}">In Google Maps öffnen</a>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+
+  // toggle logic
+  holder.querySelectorAll('.toggle').forEach(t=>{
+    t.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const group=t.dataset.group;
+        t.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll(`.mode-block[data-group="${group}"]`).forEach(mb=>{
+          mb.classList.toggle('active', mb.dataset.mode===btn.dataset.mode);
+        });
+      });
+    });
+  });
+}
+
+/* ---------------- RENDER: todos ---------------- */
+function renderTodos(){
+  const holder=document.getElementById('todoHolder');
+  let html='';
+  Object.keys(todos).forEach(group=>{
+    html += `<div class="pk-group"><h3>${group}</h3>` + todos[group].map(itemToTodoRow).join('') + `</div>`;
+  });
+  holder.innerHTML = html;
+  document.querySelectorAll('.todo-item input').forEach(cb=>cb.addEventListener('change', updateTodoCount));
+  updateTodoCount();
+}
+let todoId=0;
+function itemToTodoRow(txt){
+  todoId++;
+  return `<label class="pk-item todo-item"><input type="checkbox" id="todo${todoId}"><span class="txt">${txt}</span></label>`;
+}
+function updateTodoCount(){
+  const all=document.querySelectorAll('.todo-item input');
+  const checked=document.querySelectorAll('.todo-item input:checked');
+  document.getElementById('todoCount').textContent = `${checked.length} / ${all.length} erledigt`;
+}
+function resetTodos(){
+  document.querySelectorAll('.todo-item input').forEach(cb=>cb.checked=false);
+  updateTodoCount();
+}
+
+/* ---------------- RENDER: Umgebung Wien ---------------- */
+function renderUmgebung(){
+  const holder=document.getElementById('umgebungHolder');
+  holder.innerHTML = umgebungWien.map(g=>`
+    <div class="ug-cat">${g.cat}</div>
+    ${g.items.map(it=>`<div class="ug-item"><span><b>${it[0]}</b> — ${it[1]}</span><a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${it[2]},${it[3]}">Karte →</a></div>`).join('')}
+  `).join('');
+}
+
+/* ---------------- SUBTABS ---------------- */
+function initSubtabs(){
+  document.querySelectorAll('.subtabs').forEach(t=>{
+    const group=t.dataset.subgroup;
+    t.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        t.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll(`.subpanel[data-subgroup="${group}"]`).forEach(sp=>{
+          sp.classList.toggle('active', sp.dataset.sub===btn.dataset.sub);
+        });
+      });
+    });
+  });
+}
+
+
+function renderPacking(){
+  const holder=document.getElementById('packingHolder');
+  let html = `<div class="pk-group"><h3>Gemeinsam / Familie</h3>` +
+    packing.shared.map(itemToRow).join('') + `</div>`;
+  Object.keys(packing.people).forEach(person=>{
+    html += `<div class="pk-group"><h3>${person}</h3>` + packing.people[person].map(itemToRow).join('') + `</div>`;
+  });
+  html += `<div class="pk-group"><h3>Erst am Abreisetag</h3>` + packing.lastMinute.map(itemToRow).join('') + `</div>`;
+  holder.innerHTML = html;
+  document.querySelectorAll('.pk-item input').forEach(cb=>cb.addEventListener('change', updatePkCount));
+  updatePkCount();
+}
+let pkId=0;
+function itemToRow(txt){
+  pkId++;
+  return `<label class="pk-item"><input type="checkbox" id="pk${pkId}"><span class="txt">${txt}</span></label>`;
+}
+function updatePkCount(){
+  const all=document.querySelectorAll('.pk-item input');
+  const checked=document.querySelectorAll('.pk-item input:checked');
+  document.getElementById('pkCount').textContent = `${checked.length} / ${all.length} erledigt`;
+}
+function resetPacking(){
+  document.querySelectorAll('.pk-item input').forEach(cb=>cb.checked=false);
+  updatePkCount();
+}
+
+/* ---------------- TABS ---------------- */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const btn=e.target.closest('button[data-tab]');
+  if(!btn) return;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('section.tabpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+});
+
+/* ---------------- INIT ---------------- */
+renderRouteSvg();
+renderLegs();
+renderVandans();
+renderWien();
+renderPacking();
+renderTodos();
+renderUmgebung();
+initSubtabs();
+
+/* ---------------- PASSWORD GATE ---------------- */
+const PW_HASH = 'ba45e375f9b651818d2935d75c869b539147f3830efd1842dcf079ea878556be';
+async function sha256Hex(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function tryUnlock(){
+  const val = document.getElementById('pwInput').value;
+  const hash = await sha256Hex(val);
+  if(hash === PW_HASH){
+    localStorage.setItem('tripUnlocked','1');
+    document.getElementById('pwGate').style.display='none';
+    document.getElementById('siteContent').style.display='block';
+  } else {
+    document.getElementById('pwError').style.display='block';
+  }
+}
+document.getElementById('pwSubmit').addEventListener('click', tryUnlock);
+document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+if(localStorage.getItem('tripUnlocked')==='1'){
+  document.getElementById('pwGate').style.display='none';
+  document.getElementById('siteContent').style.display='block';
+}
+</script>
+</div>
+</body>
+</html>
